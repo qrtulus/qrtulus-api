@@ -9,4 +9,8 @@ def root():
 
 @app.get("/shazam")
 def detect_song():
-    return JSONResponse(content={"status": "Shazam logic buraya gelecek"}, status_code=200)
+    return {
+        "title": "The Weeknd - Blinding Lights",
+        "youtube_link": "https://www.youtube.com/watch?v=4NRXx6U8ABQ",
+        "mp3_download": "https://yt-download.org/api/widget/mp3/4NRXx6U8ABQ"
+    }
