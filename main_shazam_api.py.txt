@@ -1,0 +1,43 @@
+import requests
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+
+app = FastAPI()
+
+RAPIDAPI_KEY = "80732d43ddmshfb112014b927f53p12149fjsnfc08ae552a51"
+HEADERS = {
+    "x-rapidapi-host": "shazam.p.rapidapi.com",
+    "x-rapidapi-key": RAPIDAPI_KEY
+}
+
+
+@app.get("/")
+def root():
+    return {"message": "QRtulus API aktif reis!"}
+
+
+@app.get("/shazam")
+def detect_song():
+    # Örnek parmak izi kullanıyoruz (gerçek sesi işleyemediğimiz için)
+    response = requests.get(
+        "https://shazam.p.rapidapi.com/songs/list-recommendations",
+        headers=HEADERS,
+        params={"key": "484129036", "locale": "en-US"}
+    )
+    
+    if response.status_code != 200:
+        return JSONResponse(status_code=500, content={"error": "Shazam API hatası"})
+
+    data = response.json()
+    track = data['tracks'][0]
+    title = f"{track['subtitle']} - {track['title']}"
+
+    # YouTube linkini otomatik üret
+    search_query = title.replace(" ", "+")
+    youtube_link = f"https://www.youtube.com/results?search_query={search_query}"
+
+    return JSONResponse(content={
+        "title": title,
+        "youtube_search": youtube_link,
+        "note": "Bu versiyon demo amaçlıdır. Gerçek ses analizi sonraki aşamada entegre edilecek."
+    })
